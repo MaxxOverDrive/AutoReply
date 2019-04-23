@@ -2,18 +2,32 @@
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+require 'vendor/autoload.php'; // If you're using Composer (recommended)
+
+
 
 //NOT WORKING. MIGHT NOT WORK LOCALLY
-function emailer($temp_email) {
-  $to = $temp_email;
-  $subject = "Hello Neo...";
-  $message = '<h1>Follow the white rabbit!</h1>';
-  $headers = "From: Morphius <morphius@matrix.com>\r\n";
-  $headers .= "Reply-To: replyto@theredpill.com\r\n";
-  $headers .= "Content-type: text/html\r\n";
-  mail($to, $subject, $message, $headers);
-}
-emailer('codepro21@gmail.com');
+function emailer() {
+  $email = new \SendGrid\Mail\Mail();
+  $email->setFrom("test@example.com", "Example User");
+  $email->setSubject("Sending with Twilio SendGrid is Fun");
+  $email->addTo("samdpedraza@gmail.com", "Example User");
+  $email->addContent("text/plain", "and easy to do anywhere, even with PHP");
+  $email->addContent(
+      "text/html", "<strong>HI SAM THIS IS FROM FUNCTIONS.PHP BABY</strong>"
+  );
+  $sendgrid = new \SendGrid();
+  try {
+      $response = $sendgrid->send($email);
+      print $response->statusCode() . "\n";
+      print_r($response->headers());
+      print $response->body() . "\n";
+  } catch (Exception $e) {
+      echo 'Caught exception: '. $e->getMessage() ."\n";
+  }
+
+  }
+emailer();
 
 function getReplyToAddress($temp_get_reply_email) {
   $ch_main = curl_init();
